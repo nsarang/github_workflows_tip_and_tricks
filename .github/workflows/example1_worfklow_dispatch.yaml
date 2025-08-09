@@ -1,0 +1,57 @@
+name: Example - Workflow Dispatch with Inputs
+on:
+  push:
+    branches: [main]
+
+  workflow_dispatch:
+    inputs:
+      # Arguments
+      artifact_name:
+        type: string # Text field
+        description: 'Artifact identifier'
+        required: true
+      data_source:
+        type: choice # Dropdown selection
+        description: 'Select data source'
+        default: 'sample'
+        options:
+          - sample
+          - test
+          - production
+      send_notification:
+        type: boolean # Checkbox
+        description: 'Send email notification'
+        default: true
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    outputs:
+      data_source: ${{ steps.retrieve-inputs.outputs.data_source }}
+      send_notification: ${{ steps.retrieve-inputs.outputs.send_notification }}
+      artifact_name: ${{ steps.retrieve-inputs.outputs.artifact_name }}
+    steps:
+      - name: Retrieve Inputs
+        id: retrieve-inputs
+        run: |
+          # Set the defaults if triggered by push event to main branch
+          data_source="${{ inputs.data_source || 'production' }}"
+          send_notification="${{ inputs.send_notification || true }}"
+          artifact_name="${{ inputs.artifact_name || 'prod-artifact' }}"
+
+          # Expose as outputs
+          echo "data_source=$data_source" >> $GITHUB_OUTPUT
+          echo "send_notification=$send_notification" >> $GITHUB_OUTPUT
+          echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
+          
+  
+  # Example job that uses the configured inputs
+  job1:
+    needs: configure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Configured Inputs
+        run: |
+          echo "Data Source: ${{ needs.configure.outputs.data_source }}"
+          echo "Send Notification: ${{ needs.configure.outputs.send_notification }}"
+          echo "Artifact Name: ${{ needs.configure.outputs.artifact_name }}"

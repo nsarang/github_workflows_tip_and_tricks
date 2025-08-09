@@ -1,0 +1,30 @@
+name: Reusable Workflow Example
+on:
+  # This makes the workflow callable from other workflows
+  workflow_call:
+    inputs:
+      run_tests:
+        type: boolean
+        description: 'Run tests before building'
+        required: true
+  # In most cases, it's also useful to be able manually trigger these type of workflows
+  # Unfortunately, we need to duplicate the inputs here for the dispatch trigger
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        type: boolean
+        description: 'Run tests before building'
+        required: true
+jobs:
+  job1-example:
+    runs-on: ubuntu-latest
+    # Outputs of the workflow must be specified here
+    outputs:
+      # The ouput to be exported is defined in the steps
+      example_output: ${{ steps.example_step.outputs.hello_message }}
+    steps:
+      - name: Example Step
+        id: example_step
+        run: |
+          echo "This is an example step"
+          echo "hello_message=Hello from reusable workflow!" >> $GITHUB_OUTPUT

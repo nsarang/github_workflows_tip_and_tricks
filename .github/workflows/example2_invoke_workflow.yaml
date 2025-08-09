@@ -1,0 +1,19 @@
+name: Main Workflow
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  call-reusable-workflow:
+    uses: ./.github/workflows/example2_reusable_workflow.yaml # Path to the reusable workflow
+    with: # Specify the inputs
+      run_tests: true
+    secrets: inherit # Inherit secrets from the calling workflow if needed
+  
+  print-outputs:
+    needs: call-reusable-workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print the outputs
+        run: |
+          echo "Output from reusable workflow: ${{ needs.call-reusable-workflow.outputs.example_output }}"

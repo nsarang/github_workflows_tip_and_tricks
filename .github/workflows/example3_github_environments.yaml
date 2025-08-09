@@ -1,0 +1,8 @@
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production # Specify the environment here
+    steps:
+      - name: Deploy to Production
+        # This is just an example. Don't actually echo secrets in real workflows!
+        run: echo "Deploying to production with secret ${{ vars.TEST_SECRET }}"

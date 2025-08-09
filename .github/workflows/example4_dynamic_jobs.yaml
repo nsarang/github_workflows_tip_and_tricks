@@ -1,0 +1,69 @@
+name: Multi-Region Deployment
+on:
+  push:
+    branches: [main]
+  
+  workflow_dispatch:
+    inputs:
+      include_eu:
+        type: boolean
+        description: 'Deploy to EU regions for GDPR compliance'
+        default: false
+      deployment_scope:
+        type: choice
+        description: 'Deployment scope'
+        default: 'regional'
+        options:
+          - regional
+          - global
+
+jobs:
+  configure-regions:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.configure.outputs.matrix }}
+    steps:
+      - name: Build Regional Matrix
+        id: configure
+        run: |
+          # Base regions for all deployments
+          # The `matrix` variable will be a JSON array of job configurations
+          matrix='[
+            {"region": "us-east-1", "instance_type": "t3.medium"},
+            {"region": "us-west-2", "instance_type": "t3.medium"}
+          ]'
+          
+          # Add EU regions if needed
+          # Production always includes EU (when on main branch)
+          if [[ "${{ inputs.include_eu }}" == "true" || "${{ github.ref }}" == "refs/heads/main" ]]; then
+            # Append EU region configs to the matrix
+            matrix=$(echo "$matrix" | jq '. += [
+              {"region": "eu-west-1", "instance_type": "t3.large", "compliance": "gdpr"},
+              {"region": "eu-central-1", "instance_type": "t3.large", "compliance": "gdpr"}
+            ]')
+          fi
+          
+          # Add Asia-Pacific for global rollouts
+          if [[ "${{ inputs.deployment_scope }}" == "global" ]]; then
+            matrix=$(echo "$matrix" | jq '. += [
+              {"region": "ap-southeast-1", "instance_type": "t3.small"}
+            ]')
+          fi
+          
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+  deploy-regions:
+    needs: configure-regions
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJSON(needs.configure-regions.outputs.matrix) }}
+    steps:
+      - name: Deploy to Region
+        run: |
+          echo "Deploying to ${{ matrix.region }} with ${{ matrix.instance_type }}"
+          
+          # EU regions need special compliance handling
+          if [[ "${{ matrix.compliance }}" == "gdpr" ]]; then
+            echo "Applying GDPR compliance configurations"
+          fi
