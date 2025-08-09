@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     # Outputs of the workflow must be specified here
     outputs:
-      # The ouput to be exported is defined in the steps
+      # The output to be exported is defined in one of the steps
       example_output: ${{ steps.example_step.outputs.hello_message }}
     steps:
       - name: Example Step
