@@ -1,4 +1,4 @@
-name: Example - Workflow Dispatch with Inputs
+name: Workflow Dispatch with Inputs
 on:
   push:
     branches: [main]

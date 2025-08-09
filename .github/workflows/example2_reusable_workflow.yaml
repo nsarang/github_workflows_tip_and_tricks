@@ -7,6 +7,12 @@ on:
         type: boolean
         description: 'Run tests before building'
         required: true
+    # Need to explicitly define the outputs here
+    outputs:
+      example_output:
+        description: 'An example output from the reusable workflow'
+        value: ${{ jobs.job1-example.outputs.example_output }}
+  
   # In most cases, it's also useful to be able manually trigger these type of workflows
   # Unfortunately, we need to duplicate the inputs here for the dispatch trigger
   workflow_dispatch:

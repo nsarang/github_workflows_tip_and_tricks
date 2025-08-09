@@ -10,4 +10,6 @@ jobs:
     steps:
       - name: Deploy to Production
         # This is just an example. Don't actually echo secrets in real workflows!
-        run: echo "Deploying to production with secret ${{ vars.TEST_SECRET }}"
+        run: | 
+          echo "Deploying to production with secret ${{ secrets.TEST_SECRET }}"
+          echo "Environment variable XYZ: ${{ vars.XZY }}"

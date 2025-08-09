@@ -29,30 +29,26 @@ jobs:
           set -euxo pipefail
           
           # Base regions for all deployments
-          # The `matrix` variable will be a JSON array of job configurations
-          matrix=$(jq -n '[
-            {"region": "us-east-1", "instance_type": "t3.medium"},
-            {"region": "us-west-2", "instance_type": "t3.medium"}
-          ]')
+          # The `regions` variable will be a JSON array of job configurations
+          regions=()
+          regions+=('{"region": "us-east-1", "instance_type": "t3.medium"}')
+          regions+=('{"region": "us-west-2", "instance_type": "t3.medium"}')
           
           # Add EU regions if needed
           # Production always includes EU (when on main branch)
           if [[ "${{ inputs.include_eu }}" == "true" || "${{ github.ref }}" == "refs/heads/main" ]]; then
-            # Append EU region configs to the matrix
-            matrix=$(echo "$matrix" | jq '. += [
-              {"region": "eu-west-1", "instance_type": "t3.large", "compliance": "gdpr"},
-              {"region": "eu-central-1", "instance_type": "t3.large", "compliance": "gdpr"}
-            ]')
+            # Append EU region configs
+            regions+=('{"region": "eu-west-1", "instance_type": "t3.large", "compliance": "gdpr"}')
+            regions+=('{"region": "eu-central-1", "instance_type": "t3.large", "compliance": "gdpr"}')
           fi
           
           # Add Asia-Pacific for global rollouts
           if [[ "${{ inputs.deployment_scope }}" == "global" ]]; then
-            matrix=$(echo "$matrix" | jq '. += [
-              {"region": "ap-southeast-1", "instance_type": "t3.small"}
-            ]')
+            regions+=('{"region": "ap-southeast-1", "instance_type": "t3.small"}')
           fi
           
-          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+          # Output as JSON array
+          echo "matrix=$(IFS=,; echo "[${regions[*]}]")" >> $GITHUB_OUTPUT
 
   deploy-regions:
     needs: configure-regions
