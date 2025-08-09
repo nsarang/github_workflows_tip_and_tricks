@@ -2,6 +2,7 @@ name: Main Workflow
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   call-reusable-workflow:

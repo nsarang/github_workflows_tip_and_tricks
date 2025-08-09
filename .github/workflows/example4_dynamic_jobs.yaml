@@ -26,12 +26,14 @@ jobs:
       - name: Build Regional Matrix
         id: configure
         run: |
+          set -euxo pipefail
+          
           # Base regions for all deployments
           # The `matrix` variable will be a JSON array of job configurations
-          matrix='[
+          matrix=$(jq -n '[
             {"region": "us-east-1", "instance_type": "t3.medium"},
             {"region": "us-west-2", "instance_type": "t3.medium"}
-          ]'
+          ]')
           
           # Add EU regions if needed
           # Production always includes EU (when on main branch)
