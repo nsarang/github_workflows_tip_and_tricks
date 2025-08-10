@@ -36,7 +36,8 @@ jobs:
           
           # Add EU regions if needed
           # Production always includes EU (when on main branch)
-          if [[ "${{ inputs.include_eu }}" == "true" || "${{ github.ref }}" == "refs/heads/main" ]]; then
+          if [[ "${{ inputs.include_eu }}" == "true" || \
+                "${{ github.ref }}" == "refs/heads/main" ]]; then
             # Append EU region configs
             regions+=('{"region": "eu-west-1", "instance_type": "t3.large", "compliance": "gdpr"}')
             regions+=('{"region": "eu-central-1", "instance_type": "t3.large", "compliance": "gdpr"}')
