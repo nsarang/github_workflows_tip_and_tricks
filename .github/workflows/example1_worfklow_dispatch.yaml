@@ -10,11 +10,11 @@ on:
       # Arguments
       artifact_name:
         type: string # Text field
-        description: 'Artifact identifier'
+        description: 'Artifact identifier:'
         required: true
       data_source:
         type: choice # Dropdown selection
-        description: 'Select data source'
+        description: 'Data source:'
         default: 'sample'
         options:
           - sample
