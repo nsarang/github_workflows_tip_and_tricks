@@ -29,12 +29,12 @@ jobs:
   configure:
     runs-on: ubuntu-latest
     outputs:
-      data_source: ${{ steps.retrieve-inputs.outputs.data_source }}
-      send_notification: ${{ steps.retrieve-inputs.outputs.send_notification }}
-      artifact_name: ${{ steps.retrieve-inputs.outputs.artifact_name }}
+      data_source: ${{ steps.resolve-inputs.outputs.data_source }}
+      send_notification: ${{ steps.resolve-inputs.outputs.send_notification }}
+      artifact_name: ${{ steps.resolve-inputs.outputs.artifact_name }}
     steps:
-      - name: Retrieve Inputs
-        id: retrieve-inputs
+      - name: Resolve Inputs
+        id: resolve-inputs
         run: |
           # Set the defaults if triggered by push event to main branch
           data_source="${{ inputs.data_source || 'production' }}"

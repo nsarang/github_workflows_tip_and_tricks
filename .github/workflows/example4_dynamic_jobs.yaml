@@ -1,4 +1,5 @@
 name: Multi-Region Deployment
+
 on:
   push:
     branches: [main]
@@ -56,13 +57,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include: ${{ fromJSON(needs.configure-regions.outputs.matrix) }}
+        # 'fromJSON' is a Github function to convert a JSON string to an object
+        service: ${{ fromJSON(needs.configure-regions.outputs.matrix) }}
+        environment: [development, staging] # This is fixed in this example
+
+    environment: ${{ matrix.environment }}
     steps:
       - name: Deploy to Region
         run: |
-          echo "Deploying to ${{ matrix.region }} with ${{ matrix.instance_type }}"
+          echo "Deploying to ${{ matrix.service.region }} with ${{ matrix.service.instance_type }}"
           
           # EU regions need special compliance handling
-          if [[ "${{ matrix.compliance }}" == "gdpr" ]]; then
+          if [[ "${{ matrix.service.compliance }}" == "gdpr" ]]; then
             echo "Applying GDPR compliance configurations"
           fi

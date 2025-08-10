@@ -1,13 +1,15 @@
 name: Main Workflow
+
 on:
   pull_request:
     branches: [main]
+  
   workflow_dispatch:
 
 jobs:
   call-reusable-workflow:
     uses: ./.github/workflows/example2_reusable_workflow.yaml # Path to the reusable workflow
-    with: # Specify the inputs
+    with: # Specify the inputs (if any) (also, why is this not called `inputs`?!)
       run_tests: true
     secrets: inherit # Inherit secrets from the calling workflow if needed
   

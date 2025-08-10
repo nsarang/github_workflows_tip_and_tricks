@@ -17,15 +17,19 @@ jobs:
           echo "run_b=$run_b" >> $GITHUB_OUTPUT
   job_b:
     runs-on: ubuntu-latest
-    needs: job_a # This job depends on job1
-    # Only run if job_a says so
-    if: needs.job_a.outputs.run_b == 'true' # Note that the output is a string, so we compare it to 'true' instead of true
+    # Dependency on job A
+    needs: job_a
+    # `if` condition as to whether to run this job. Here, it's based on the output of job A
+    # Note that the output is a string, so we compare it to string 'true'
+    if: needs.job_a.outputs.run_b == 'true' 
     steps:
       - run: echo "This is job B, which runs only if job A's condition is met."
   
   job_c:
     runs-on: ubuntu-latest
+    # Dependency on job B
     needs: job_b
-    if: ${{ !failure() && !cancelled() }} # Only run if job B didn't fail or was cancelled
+    # Only run if job B didn't fail and wasn't cancelled
+    if: ${{ !failure() && !cancelled() }}
     steps:
       - run: echo "This is job C, which runs only if job B was either successful or skipped."
